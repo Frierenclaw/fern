@@ -5,7 +5,6 @@ from core.config import config
 from voice_recognition.layer import VoiceRecognition
 from vad.layer import VADLayer 
 
-
 from loguru import logger
 
 import numpy as np
@@ -28,7 +27,8 @@ def main():
 
     with sd.InputStream(samplerate=SAMPLERATE, channels=config.VR_CHANNELS,
                         dtype='float32', callback=audio_callback,
-                        device=1, blocksize=BLOCKSIZE):
+                        device=1, blocksize=BLOCKSIZE): # TODO: добавить в config выбор девайса
+        
         logger.debug('Starting listening... Press CTRL + C for stop')
 
         buffer = []

@@ -1,6 +1,7 @@
 from core.config import whisper_model
 
 import numpy as np
+from loguru import logger
 
 class VoiceRecognition:
     @classmethod
@@ -20,6 +21,6 @@ class VoiceRecognition:
 
         for segment in segments:
             if any(word in segment.text.lower() for word in ['гугле', 'гугл', 'гугал', 'google']):
-                print(segment.text)
+                logger.debug(f'Wake word detected, segment text: {segment.text}')
             else:
-                print(f'Смог найти речь, но нет ключевой фразы! {segment.text}')
+                logger.debug(f'Voice segment detected, but no wake word. Segment text: {segment.text}')

@@ -25,7 +25,6 @@ def show_splash(duration=3000):
     y = (screen_height - img_h) // 2
     root.geometry(f'{img_w}x{img_h}+{x}+{y}')
 
-    # Прозрачность окна
     root.config(bg='black')
     root.attributes('-transparentcolor', 'black')
 

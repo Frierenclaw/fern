@@ -6,7 +6,7 @@ from silero_vad import load_silero_vad
 import socket
 
 class Config(BaseSettings):
-    WHISPER_MODEL_TYPE: Literal['small', 'medium'] = 'small'
+    WHISPER_MODEL_TYPE: Literal['small', 'medium'] = 'medium'
     WHISPER_DEVICE_TYPE: Literal['cpu', 'cuda'] = 'cpu'
     
     VR_SAMPLERATE: int = 16_000
