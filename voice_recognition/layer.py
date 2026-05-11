@@ -24,3 +24,7 @@ class VoiceRecognition:
                 logger.debug(f'Wake word detected, segment text: {segment.text}')
             else:
                 logger.debug(f'Voice segment detected, but no wake word. Segment text: {segment.text}')
+
+        full_text = ' '.join(segment.text for segment in segments)
+        print(full_text)
+        return full_text

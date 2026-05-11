@@ -1,4 +1,5 @@
 from utils.show_splash import show_splash
+from utils.login import login_pipeline
 from queue import Queue
 from core.config import config
 
@@ -7,11 +8,30 @@ from vad.layer import VADLayer
 
 from loguru import logger
 
+import io
+import pyaudio
 import numpy as np
 import sounddevice as sd
+import soundfile as sf
+#! TODO СНЕСТИ ВЕСЬ КОД НАФИГ
+print(sd.query_devices())
+p = pyaudio.PyAudio()
+stream = p.open(
+                output_device_index=6,
+                format=p.get_format_from_width(2),
+                channels=1,
+                rate=24000,
+                output=True)
+
+def mp3_to_pcm(mp3_bytes: bytes) -> bytes:
+    buf = io.BytesIO(mp3_bytes)
+    data, samplerate = sf.read(buf, dtype='int16')
+    return data.tobytes()
 
 def main():
-    show_splash()
+    #show_splash()
+
+    heiter = login_pipeline()
 
     queue = Queue()
     SAMPLERATE = config.VR_SAMPLERATE
@@ -27,11 +47,12 @@ def main():
 
     with sd.InputStream(samplerate=SAMPLERATE, channels=config.VR_CHANNELS,
                         dtype='float32', callback=audio_callback,
-                        device=1, blocksize=BLOCKSIZE): # TODO: добавить в config выбор девайса
+                        device=7, blocksize=BLOCKSIZE): # TODO: добавить в config выбор девайса
         
         logger.debug('Starting listening... Press CTRL + C for stop')
 
         buffer = []
+        
         while True:
             chunk = queue.get()
             buffer.append(chunk)
@@ -58,6 +79,15 @@ def main():
                         silence_counter = 0
 
                         logger.debug(f'Transcribing {len(full_speech)/SAMPLERATE:.2f}s of speech')
-                        VoiceRecognition.transcribe_audio(full_speech)
+                        
+                        voice_segments = VoiceRecognition.transcribe_audio(full_speech)
+                        print(voice_segments)
+                        if True:
+                            print('Да, получено')
+                            gpt_text = heiter.generate_message(voice_segments)
+                            print(gpt_text)
+                            for i in heiter.synthezis_text(gpt_text):
+                                stream.write(mp3_to_pcm(i))
+                            
 if __name__ == '__main__':
     main()

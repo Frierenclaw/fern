@@ -1,4 +1,5 @@
 from pydantic_settings import BaseSettings
+from pydantic import HttpUrl
 from faster_whisper import WhisperModel
 from typing import Literal
 from silero_vad import load_silero_vad
@@ -6,9 +7,11 @@ from silero_vad import load_silero_vad
 import socket
 
 class Config(BaseSettings):
-    WHISPER_MODEL_TYPE: Literal['small', 'medium'] = 'medium'
+    WHISPER_MODEL_TYPE: Literal['small', 'medium'] = 'small'
     WHISPER_DEVICE_TYPE: Literal['cpu', 'cuda'] = 'cpu'
-    
+
+    HEITER_BASE_URL: HttpUrl = 'http://127.0.0.1:8080/v1'
+
     VR_SAMPLERATE: int = 16_000
     VR_CHANNELS: int = 1
 
