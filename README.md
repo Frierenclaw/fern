@@ -9,7 +9,7 @@
 
 ## 🔮 Responsibilities
 
-* **The Gatekeeper:** Establishes and manages bidirectional WebSocket connections with `frieren-desktop`.
+* **The Gatekeeper:** Establishes and manages bidirectional WebRTC connections with `frieren-desktop`.
 * **The Transcriber:** Captures raw PCM audio from the client and routes it through fast VAD and STT.
 * **The Catalyst:** Streams context to `heiter` (Inference Server) and processes incoming text tokens on the fly.
 * **The Alchemist:** Generates real-time audio streams via TTS and simultaneously extracts speech visemes (mouth animation data) to push back to the 3D client.
@@ -19,7 +19,7 @@
 
 | From | Direction / Protocol | To | Data Transferred |
 | :--- | :--- | :--- | :--- |
-| `frieren-desktop` | `---> (Raw Audio PCM) --->` | `VAD / STT` | Captures raw microphone input from the client. |
+| `frieren-desktop` | `---> (Raw Audio PCM) ---ч>` | `VAD / STT` | Captures raw microphone input from the client. |
 | `VAD / STT` | `---> (Audio/Text Chunks) --->` | `heiter` (LLM) Service | Decoded voice tokens routed to the inference backend. |
 | `heiter` (LLM) Service | `<--- (Text Tokens) <---` | TTS Engine | Text tokens generated on the fly stream directly into the synthesis layer. |
 | TTS Engine | `<--- (Audio & Visemes) <---` | `frieren-desktop` | Final synthesized audio frames and real-time lip-sync JSON pushed back to the 3D client. |
@@ -28,7 +28,7 @@
 
 * **Core Engine:** Python 3.14 (Optimized for `asyncio`)
 * **Pipeline Framework:** `pipecat-ai`
-* **Network Protocol:** High-speed WebSockets
+* **Network Protocol:** High-speed WebRTC
 * **Dependencies:** `pydantic`, `httpx`, `aiohttp`
 
 
