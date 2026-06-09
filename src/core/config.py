@@ -66,8 +66,7 @@ TORTOISE_ORM = {
     'connections': {
         'default': config.DB_URL
     },
-    'minsize': 8,
-    'maxsize': 30,
+
     'timezone': 'UTC',
     
     'apps': {
