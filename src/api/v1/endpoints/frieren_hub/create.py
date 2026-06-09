@@ -82,7 +82,7 @@ async def upload_model(model: UploadFile,
 
     if model.size and model.size > config.MAX_MODEL_SIZE:
         raise HTTPException(status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
-                            detail=f'Model size must be less than {config.MAX_COVER_SIZE} bytes')
+                            detail=f'Model size must be less than {config.MAX_MODEL_SIZE} bytes')
 
     character = await Character.get_or_none(id=character_id, created_by=user)
     
@@ -90,11 +90,11 @@ async def upload_model(model: UploadFile,
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail='Character not found')
     
-    filename = f'{character.id}_cover{extension.lower()}'
-    cover_io = await model.read()
+    filename = f'{character.id}_model{extension.lower()}'
+    model_io = await model.read()
 
     s3 = S3Client()
-    model_url = await s3.upload_object(filename, cover_io, content_type=model.content_type)
+    model_url = await s3.upload_object(filename, model_io, content_type=model.content_type)
     
     character.model_url = model_url
     await character.save(update_fields=['model_url'])

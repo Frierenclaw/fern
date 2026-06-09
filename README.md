@@ -31,6 +31,5 @@
 * **Network Protocol:** LiveKIT for audio
 * **Dependencies:** `pydantic`, `httpx`, `aiohttp`
 
-
 ---
-*Part of the [Frieren AI Ecosystem](https://github.com/Frierenclaw)
+*Part of the [Frieren AI Ecosystem](https://github.com/Frierenclaw)*
