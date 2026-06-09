@@ -19,6 +19,20 @@ class Config(BaseSettings):
     LIVEKIT_API_KEY: str
     LIVEKIT_API_SECRET: str
 
+    S3_ENDPOINT_URL: str
+    AWS_ACCESS_KEY_ID: str
+    AWS_SECRET_ACCESS_KEY: str
+    BUCKET_NAME: str
+    S3_REGION_NAME: str
+
+    MAX_COVER_SIZE: int = 5 * 1024 * 1024
+    ALLOWED_COVER_EXTENSIONS: list[str]
+    ALLOWED_COVER_MIME_TYPES: list[str]
+
+    MAX_MODEL_SIZE: int = 100 * 1024 * 1024
+    ALLOWED_MODEL_EXTENSIONS: list[str]
+    ALLOWED_MODEL_MIME_TYPES: list[str]
+
     ACCESS_TOKEN_TTL: int
     REFRESH_TOKEN_TTL: int
     JWT_ALGO: str
@@ -54,11 +68,13 @@ TORTOISE_ORM = {
     },
     'minsize': 8,
     'maxsize': 30,
+    'timezone': 'UTC',
     
     'apps': {
         'models': {
             'models': [
-                'models.user'
+                'models.user',
+                'models.character'
             ],
             'migrations': 'models.migrations',
             'default_connection': 'default'

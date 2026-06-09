@@ -28,7 +28,7 @@
 
 * **Core Engine:** Python 3.14 (Optimized for `asyncio`)
 * **Pipeline Framework:** `pipecat-ai`
-* **Network Protocol:** High-speed WebRTC
+* **Network Protocol:** LiveKIT for audio
 * **Dependencies:** `pydantic`, `httpx`, `aiohttp`
 
 

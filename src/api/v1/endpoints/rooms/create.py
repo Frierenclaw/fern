@@ -2,13 +2,15 @@ import asyncio
 import uuid
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Body, Depends, HTTPException, status
 from pipecat.transports.livekit.transport import LiveKitParams, LiveKitTransport
+from pydantic import UUID4
 
 from api.v1.bot.pipeline import run_bot
 from api.v1.deps.auth import get_current_user
 from api.v1.livekit_logic import LiveKIT
 from core.config import config
+from models.character import Character
 from models.user import User
 
 router = APIRouter()
@@ -17,15 +19,23 @@ _bot_tasks: set[asyncio.Task] = set()
 
 
 @router.post('/')
-async def create_room_and_invite_frieren(user: Annotated[User, Depends(get_current_user)]):
+async def create_room_and_invite_frieren(user: Annotated[User, Depends(get_current_user)],
+                                         character_id: UUID4):
     random_uuid = uuid.uuid4().hex
+    character = await Character.get_or_none(id=character_id) # TODO: add cache to redis
 
+
+    if not character:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail='Character not found')
+    
     livekit = LiveKIT()
     room_name = await livekit.create_room(f'session-{user.id}-{random_uuid}')
     frieren_token = livekit.create_token(room_name=room_name,
                                          participant_identity=f'frieren-{random_uuid}')
     user_token = livekit.create_token(room_name=room_name,
                                       participant_identity=f'user-{user.full_name}')
+    
     
     transport = LiveKitTransport(
         url=config.LIVEKIT_API_URL,
@@ -35,7 +45,8 @@ async def create_room_and_invite_frieren(user: Annotated[User, Depends(get_curre
                              audio_in_enabled=True)
     )
     
-    task = asyncio.create_task(run_bot(transport))
+    task = asyncio.create_task(run_bot(transport=transport,
+                                       prompt=character.prompt))
     _bot_tasks.add(task)
     task.add_done_callback(_bot_tasks.discard)
 

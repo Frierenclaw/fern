@@ -14,7 +14,8 @@ from core.clients import create_stt, create_vad
 from core.config import config
 
 
-async def run_bot(transport: LiveKitTransport):
+async def run_bot(transport: LiveKitTransport,
+                  prompt: str):
     runner = WorkerRunner()
 
     stt = create_stt()
@@ -32,8 +33,7 @@ async def run_bot(transport: LiveKitTransport):
         base_url=f'{config.HEITER_BASE_URL}/audio/speech'
     )
 
-    context = LLMContext(
-    )
+    context = LLMContext(messages=[{'role': 'system', 'content': prompt}])
 
     aggregators = LLMContextAggregatorPair(context=context,
                                            user_params=LLMUserAggregatorParams(vad_analyzer=vad))
@@ -54,14 +54,14 @@ async def run_bot(transport: LiveKitTransport):
 
     worker = PipelineWorker(
         pipeline,
-        name="assistant",
+        name='assistant',
         params=PipelineParams(
             enable_metrics=True,
             enable_usage_metrics=True,
         ),
     )
 
-    @transport.event_handler("on_client_disconnected")
+    @transport.event_handler('on_client_disconnected')
     async def on_disconnect(transport, client):
         await runner.cancel()
 
