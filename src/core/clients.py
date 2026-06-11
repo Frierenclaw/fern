@@ -8,11 +8,9 @@ _whisper_model = WhisperModel("base", device="cpu", compute_type="int8")
 def create_stt() -> WhisperSTTService:
     stt = WhisperSTTService(
         settings=WhisperSTTService.Settings(
-            language="ru",
             model="base",
         ),
     )
-    # Подменяем модель на уже загруженную
     stt._model = _whisper_model
     return stt
 
