@@ -42,6 +42,13 @@ class Config(BaseSettings):
     REFRESH_PRIVATE_KEY_PATH: str = 'certs/refresh_private.pem'
     REFRESH_PUBLIC_KEY_PATH: str = 'certs/refresh_public.pem'
 
+    REDIS_HOST: str
+    REDIS_PORT: int = 6379
+    REDIS_PASSWORD: str
+
+    CARTESIA_API_KEY: str | None = None
+    CARTESIA_VOICE_ID: str | None = None
+
     @cached_property
     def ACCESS_PRIVATE_KEY(self) -> str:
         return Path(self.ACCESS_PRIVATE_KEY_PATH).read_text()
@@ -58,6 +65,10 @@ class Config(BaseSettings):
     def REFRESH_PUBLIC_KEY(self) -> str:
         return Path(self.REFRESH_PUBLIC_KEY_PATH).read_text()
     
+    @cached_property
+    def REDIS_URL(self) -> str:
+        return f"redis://:{self.REDIS_PASSWORD}@{self.REDIS_HOST}:{self.REDIS_PORT}"
+    
     model_config = SettingsConfigDict(env_file='.env', extra='ignore')
 
 config = Config()
@@ -73,7 +84,8 @@ TORTOISE_ORM = {
         'models': {
             'models': [
                 'models.user',
-                'models.character'
+                'models.character',
+                'models.character_collection'
             ],
             'migrations': 'models.migrations',
             'default_connection': 'default'

@@ -5,17 +5,25 @@ from pipecat.processors.aggregators.llm_response_universal import (
     LLMContextAggregatorPair,
     LLMUserAggregatorParams,
 )
+from pipecat.services.cartesia.tts import CartesiaTTSService
 from pipecat.services.openai.llm import OpenAILLMService
 from pipecat.transports.livekit.transport import LiveKitTransport
+from pipecat.turns.user_start import WakePhraseUserTurnStartStrategy
+from pipecat.turns.user_turn_strategies import (
+    UserTurnStrategies,
+    default_user_turn_start_strategies,
+)
 from pipecat.workers.runner import WorkerRunner
 
+from api.v1.bot.viseme_processor import VRMVisemeProcessor
 from api.v1.heiter.tts import HeiterTTSService
 from core.clients import create_stt, create_vad
 from core.config import config
 
 
 async def run_bot(transport: LiveKitTransport,
-                  prompt: str):
+                  prompt: str,
+                  wake_phrases: list[str]):
     runner = WorkerRunner()
 
     stt = create_stt()
@@ -28,15 +36,24 @@ async def run_bot(transport: LiveKitTransport,
             model=config.HEITER_MODEL_NAME,
         ),
     )
+    
+    if (not config.CARTESIA_API_KEY) or (not config.CARTESIA_VOICE_ID): 
+        tts = HeiterTTSService(
+            base_url=f'{config.HEITER_BASE_URL}/audio/speech'
+        )
 
-    tts = HeiterTTSService(
-        base_url=f'{config.HEITER_BASE_URL}/audio/speech'
-    )
+    tts = CartesiaTTSService(api_key=config.CARTESIA_API_KEY,
+                             voice_id=config.CARTESIA_VOICE_ID)
+    viseme_processor = VRMVisemeProcessor(transport)
 
     context = LLMContext(messages=[{'role': 'system', 'content': prompt}])
 
     aggregators = LLMContextAggregatorPair(context=context,
-                                           user_params=LLMUserAggregatorParams(vad_analyzer=vad))
+                                           user_params=LLMUserAggregatorParams(vad_analyzer=vad,
+                                                                               user_turn_strategies=UserTurnStrategies(
+                                                                                   start=[WakePhraseUserTurnStartStrategy(phrases=wake_phrases),
+                                                                                          *default_user_turn_start_strategies()]
+                                                                               )))
 
     pipeline = Pipeline([
         transport.input(),
@@ -46,6 +63,7 @@ async def run_bot(transport: LiveKitTransport,
         
         llm,
         tts,
+        viseme_processor,
         
         transport.output(),
         
