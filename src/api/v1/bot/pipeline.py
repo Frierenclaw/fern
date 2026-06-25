@@ -43,7 +43,7 @@ async def run_bot(transport: LiveKitTransport,
         )
 
     tts = CartesiaTTSService(api_key=config.CARTESIA_API_KEY,
-                             voice_id=config.CARTESIA_VOICE_ID)
+                             settings=CartesiaTTSService.Settings(voice=config.CARTESIA_VOICE_ID))
     viseme_processor = VRMVisemeProcessor(transport)
 
     context = LLMContext(messages=[{'role': 'system', 'content': prompt}])
@@ -63,10 +63,9 @@ async def run_bot(transport: LiveKitTransport,
         
         llm,
         tts,
-        viseme_processor,
-        
         transport.output(),
-        
+        viseme_processor,
+
         aggregators.assistant(),
     ])
 
