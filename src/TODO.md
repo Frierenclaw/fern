@@ -4,3 +4,4 @@
 [+] Visemes sender
 [+] WakeWord
 [+] Consider replacing Edge TTS on Heiter layer
+[] Consider the possibility of removing or upgrading the Heiter architecture node

@@ -41,9 +41,9 @@ async def run_bot(transport: LiveKitTransport,
         tts = HeiterTTSService(
             base_url=f'{config.HEITER_BASE_URL}/audio/speech'
         )
-
-    tts = CartesiaTTSService(api_key=config.CARTESIA_API_KEY,
-                             settings=CartesiaTTSService.Settings(voice=config.CARTESIA_VOICE_ID))
+    else:
+        tts = CartesiaTTSService(api_key=config.CARTESIA_API_KEY,
+                                settings=CartesiaTTSService.Settings(voice=config.CARTESIA_VOICE_ID))
     viseme_processor = VRMVisemeProcessor(transport)
 
     context = LLMContext(messages=[{'role': 'system', 'content': prompt}])

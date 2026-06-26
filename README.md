@@ -23,9 +23,13 @@
 
 ## 🛠 Tech Stack & Spells
 
-* **Core Engine:** Python 3.14 (Optimized for `asyncio`)
+* **Core Engine:** Python 3.13 (Optimized for `asyncio`)
 * **Pipeline Framework:** `pipecat-ai`
 * **Network Protocol:** LiveKIT for audio
+* **S3** For file storage
+* **Redis** For cache
+* **PostgreSQL** For main database
+* **Tortoise ORM** For convenient management of data in the database using native asynchronous Python objects
 * **Dependencies:** `pydantic`, `httpx`, `aiohttp`
 
 ---
