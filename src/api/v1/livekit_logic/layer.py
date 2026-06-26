@@ -4,10 +4,13 @@ from core.config import config
 
 
 class LiveKIT:
-    def __init__(self):
-        self.livekit = lk_api.LiveKitAPI(url=config.LIVEKIT_API_URL,
-                            api_key=config.LIVEKIT_API_KEY,
-                            api_secret=config.LIVEKIT_API_SECRET)
+    """
+    Single-server wrapper. Designed to support multiple LiveKit
+    instances in the future (multi-tenant pattern).
+    """
+
+    def __init__(self, livekit_client):
+        self.livekit = livekit_client
         
     async def create_room(self, room_name: str) -> str:
         room = await self.livekit.room.create_room(

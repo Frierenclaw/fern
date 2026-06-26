@@ -14,7 +14,8 @@ class CharacterDTO(BaseModel):
     description: str
     cover_url: str | None
     model_url: str | None
-
+    likes: int | None = None
+    
     created_by: UserDTO
 
     model_config = ConfigDict(from_attributes=True)
