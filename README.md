@@ -4,9 +4,6 @@
 
 **Fern** is the central nervous system and real-time orchestrator of the Frieren AI Ecosystem. Built on top of `pipecat-ai` and driven by `asyncio`, it manages the entire multimodal pipeline with extreme focus on ultra-low latency.
 
-> [!IMPORTANT]
-> **Development Reboot:** This repository marks a complete overhaul of the core pipeline. The previous implementation was highly synchronous and relied on subpar workarounds. This new iteration transitions fully to `pipecat-ai`, enforcing strict asynchronous handling, shifting CPU-bound workloads entirely onto **Heiter**, and establishing proper concurrency. The legacy codebase remains accessible in the `old` branch.
-
 ## 🔮 Responsibilities
 
 * **The Gatekeeper:** Establishes and manages bidirectional WebRTC connections with `frieren-desktop`.
