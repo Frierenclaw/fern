@@ -1,0 +1,33 @@
+"""
+Unit-test fixtures: FakeRedis, mock external clients.
+"""
+from __future__ import annotations
+
+import pytest
+import fakeredis.aioredis
+
+
+@pytest.fixture
+async def fake_redis():
+    server = fakeredis.aioredis.FakeServer()
+    client = fakeredis.aioredis.FakeRedis(server=server, decode_responses=True)
+    yield client
+    await client.aclose()
+
+
+@pytest.fixture(autouse=True)
+def _patch_redis_client(monkeypatch, fake_redis):
+    """Replace the global redis_client singleton with FakeRedis."""
+    import core.clients
+    import redis_db.client
+
+    monkeypatch.setattr(core.clients, "RedisClient", lambda *a, **kw: fake_redis)
+
+
+@pytest.fixture(autouse=True)
+def _patch_whisper_model(monkeypatch):
+    """Stub out the WhisperModel which loads a large model at import time."""
+    import core.clients
+
+    monkeypatch.setattr(core.clients, "_whisper_model", None)
+    monkeypatch.setattr(core.clients, "WhisperModel", lambda *a, **kw: None)

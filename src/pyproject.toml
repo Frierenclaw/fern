@@ -70,3 +70,25 @@ line-ending = "auto"
 
 [tool.tortoise]
 tortoise_orm = "core.config.TORTOISE_ORM"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.24.0",
+    "pytest-cov>=6.0.0",
+    "httpx>=0.28.0",
+    "respx>=0.22.0",
+    "fakeredis>=2.25.0",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.coverage.run]
+source = ["api", "redis_db", "core", "models"]
+omit = ["*/migrations/*"]
+
+[tool.coverage.report]
+show_missing = true
