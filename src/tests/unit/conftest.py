@@ -3,8 +3,8 @@ Unit-test fixtures: FakeRedis, mock external clients.
 """
 from __future__ import annotations
 
-import pytest
 import fakeredis.aioredis
+import pytest
 
 
 @pytest.fixture
@@ -19,7 +19,6 @@ async def fake_redis():
 def _patch_redis_client(monkeypatch, fake_redis):
     """Replace the global redis_client singleton with FakeRedis."""
     import core.clients
-    import redis_db.client
 
     monkeypatch.setattr(core.clients, "RedisClient", lambda *a, **kw: fake_redis)
 

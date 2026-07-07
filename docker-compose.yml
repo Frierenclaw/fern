@@ -22,12 +22,9 @@ services:
     command: --config /etc/livekit.yaml
     volumes:
       - ./livekit.yaml:/etc/livekit.yaml:ro
-    networks:
-      - backend_network
-    ports:
-      - "7880:7880"
-      - "7881:7881"
-      - "50000-60000:50000-60000/udp"
+    
+    network_mode: "host"
+    
     restart: unless-stopped
 
   postgres:

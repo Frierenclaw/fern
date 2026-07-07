@@ -4,8 +4,6 @@ Unit tests for redis_db.client.RedisClient.
 from __future__ import annotations
 
 import uuid
-from types import SimpleNamespace
-from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 

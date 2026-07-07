@@ -12,3 +12,5 @@ class User(models.Model):
     role = fields.CharEnumField(RoleEnum,
                                 default=RoleEnum.USER)
     password = fields.BinaryField()
+
+    created_at = fields.DatetimeField(auto_now_add=True)

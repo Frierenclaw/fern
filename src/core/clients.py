@@ -14,8 +14,8 @@ _whisper_model = WhisperModel("base", device="cpu", compute_type="int8")
 def create_stt() -> WhisperSTTService:
     stt = WhisperSTTService(
         settings=WhisperSTTService.Settings(
-            model="medium",
-            language="ru"
+            model="large-v3",
+            language=None
         ),
     )
     stt._model = _whisper_model

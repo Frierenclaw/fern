@@ -42,7 +42,7 @@ async def get_character_by_id(request: Request, character_id: UUID4):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail='Character not found')
     
-    likes = await request.app.state.redis_db.get_character_likes(character_id.id)
+    likes = await request.app.state.redis_db.get_character_likes(character_id)
 
     return CharacterDTO(id=character.id,
                         name=character.name,

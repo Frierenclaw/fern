@@ -27,7 +27,7 @@ class TestUploadObject:
             assert call_kwargs["Bucket"] == "test-bucket"
             assert call_kwargs["Key"] == "cover.jpg"
             assert call_kwargs["ContentType"] == "image/jpeg"
-            assert "https://s3.test.com/test-bucket/cover.jpg" == result
+            assert result == "https://s3.test.com/test-bucket/cover.jpg"
 
     @pytest.mark.asyncio
     async def test_omits_content_type_when_none(self):
