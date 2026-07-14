@@ -1,7 +1,7 @@
 from functools import cached_property
 from pathlib import Path
 
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Config(BaseSettings):
@@ -33,6 +33,10 @@ class Config(BaseSettings):
     ALLOWED_MODEL_EXTENSIONS: list[str]
     ALLOWED_MODEL_MIME_TYPES: list[str]
 
+    MAX_ANIMATIONS_SIZE: int = 15 * 1024 * 1024
+    ALLOWED_ANIMATIONS_EXTENSIONS: list[str]
+    ALLOWED_ANIMATIONS_MIME_TYPES: list[str]
+
     ACCESS_TOKEN_TTL: int
     REFRESH_TOKEN_TTL: int
     JWT_ALGO: str
@@ -46,8 +50,11 @@ class Config(BaseSettings):
     REDIS_PORT: int = 6379
     REDIS_PASSWORD: str
 
+    USE_CARTESIA: bool = False
     CARTESIA_API_KEY: str | None = None
     CARTESIA_VOICE_ID: str | None = None
+
+    model_config = SettingsConfigDict(env_file='.env', extra='allow')
 
     @cached_property
     def ACCESS_PRIVATE_KEY(self) -> str:
@@ -83,7 +90,8 @@ TORTOISE_ORM = {
             'models': [
                 'models.user',
                 'models.character',
-                'models.character_collection'
+                'models.character_collection',
+                'models.client'
             ],
             'migrations': 'models.migrations',
             'default_connection': 'default'

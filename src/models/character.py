@@ -11,6 +11,7 @@ class Character(models.Model):
 
     cover_url = fields.TextField(null=True) # URL of cover in S3
     model_url = fields.TextField(null=True) # URL of vrm in S3
+    animations_url = fields.TextField(null=True) # URL of vrma in S3
     
     created_by = fields.ForeignKeyField('models.User')
     created_at = fields.DatetimeField(auto_now_add=True)

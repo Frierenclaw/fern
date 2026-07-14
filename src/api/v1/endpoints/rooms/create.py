@@ -11,6 +11,7 @@ from api.v1.livekit_logic import LiveKIT
 from api.v1.schemas.create_room import CreateRoomDTO
 from core.config import config
 from models.character import Character
+from models.client import Client
 from models.user import User
 
 router = APIRouter()
@@ -25,6 +26,15 @@ async def create_room_and_invite_frieren(request: Request,
     random_uuid = uuid.uuid4().hex
     character = await Character.get_or_none(id=dto.character_id) # TODO: add cache to redis
 
+    client = None
+
+    if dto.client_id:
+        client = await Client.get_or_none(id=dto.client_id,
+                                          user=user).prefetch_related('functions')
+
+        if not client:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail='Client not found. Please register your client')
 
     if not character:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
@@ -35,7 +45,7 @@ async def create_room_and_invite_frieren(request: Request,
     frieren_token = livekit.create_token(room_name=room_name,
                                          participant_identity=f'frieren-{random_uuid}')
     user_token = livekit.create_token(room_name=room_name,
-                                      participant_identity=f'user-{user.full_name}')
+                                      participant_identity=f'user-{user.id}')
     
     
     transport = LiveKitTransport(
@@ -48,7 +58,9 @@ async def create_room_and_invite_frieren(request: Request,
     
     task = asyncio.create_task(run_bot(transport=transport,
                                        prompt=character.prompt,
-                                       wake_phrases=dto.wake_words))
+                                       wake_phrases=dto.wake_words,
+                                       client=client,
+                                       animations=dto.animations))
     _bot_tasks.add(task)
     task.add_done_callback(_bot_tasks.discard)
 

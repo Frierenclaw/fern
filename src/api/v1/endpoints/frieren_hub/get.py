@@ -24,6 +24,7 @@ async def serialize_characters_with_likes(characters: list[Character],
             name=character.name,
             description=character.description,
             cover_url=character.cover_url,
+            animations_url=character.animations_url,
             model_url=character.model_url,
             likes=likes,
             created_by=UserDTO(
@@ -49,6 +50,7 @@ async def get_character_by_id(request: Request, character_id: UUID4):
                         description=character.description,
                         model_url=character.model_url,
                         cover_url=character.cover_url,
+                        animations_url=character.animations_url,
                         likes=likes,
                         created_by=UserDTO(
                             id=character.created_by.id,

@@ -100,3 +100,38 @@ async def upload_model(model: UploadFile,
     await character.save(update_fields=['model_url'])
 
     return {'status': 'ok'}
+
+@router.post('/animations')
+async def upload_animations(animations: UploadFile,
+                            user: Annotated[User, Depends(get_current_user)],
+                            character_id: UUID4):  
+    _, extension = os.path.splitext(animations.filename)
+    
+    if extension.lower() not in config.ALLOWED_ANIMATIONS_EXTENSIONS:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail=f'Allowed formats: {", ".join(config.ALLOWED_ANIMATIONS_EXTENSIONS)}')
+    
+    if animations.content_type not in config.ALLOWED_ANIMATIONS_MIME_TYPES:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail='Invalid content type')
+
+    if animations.size and animations.size > config.MAX_ANIMATIONS_SIZE:
+        raise HTTPException(status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                            detail=f'Animations size must be less than {config.MAX_MODEL_SIZE} bytes')
+
+    character = await Character.get_or_none(id=character_id, created_by=user)
+    
+    if not character:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail='Character not found')
+    
+    filename = f'{character.id}_model{extension.lower()}'
+    animations_io = await animations.read()
+
+    s3 = S3Client()
+    animations_url = await s3.upload_object(filename, animations_io, content_type=animations.content_type)
+    
+    character.animations_url = animations_url
+    await character.save(update_fields=['animations_url'])
+
+    return {'status': 'ok'}
