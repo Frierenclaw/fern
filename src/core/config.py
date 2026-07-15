@@ -61,7 +61,7 @@ class Config(BaseSettings):
 
     DEEPGRAM_API_KEY: str
     DEEPGRAM_MODEL: str
-    
+
     @cached_property
     def ACCESS_PRIVATE_KEY(self) -> str:
         return Path(self.ACCESS_PRIVATE_KEY_PATH).read_text()

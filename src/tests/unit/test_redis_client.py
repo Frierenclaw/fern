@@ -41,6 +41,7 @@ class TestStoreCharacter:
         dto = CharacterDTO(
             id=uuid.uuid4(), name="Frieren", description="Mage",
             cover_url=None, model_url=None,
+            animations_url=None,
             created_by=UserDTO(id=uuid.uuid4(), full_name="Author"),
         )
         await rc.store_character(cid, dto, ttl=3600)

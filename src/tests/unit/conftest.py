@@ -23,10 +23,3 @@ def _patch_redis_client(monkeypatch, fake_redis):
     monkeypatch.setattr(core.clients, "RedisClient", lambda *a, **kw: fake_redis)
 
 
-@pytest.fixture(autouse=True)
-def _patch_whisper_model(monkeypatch):
-    """Stub out the WhisperModel which loads a large model at import time."""
-    import core.clients
-
-    monkeypatch.setattr(core.clients, "_whisper_model", None)
-    monkeypatch.setattr(core.clients, "WhisperModel", lambda *a, **kw: None)

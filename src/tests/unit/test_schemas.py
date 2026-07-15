@@ -34,6 +34,7 @@ class TestCharacterDTO:
         dto = CharacterDTO(
             id=VALID_UUID, name="Frieren", description="Mage",
             cover_url=None, model_url=None,
+            animations_url=None,
             created_by=UserDTO(id=VALID_UUID, full_name="Author"),
         )
         assert dto.name == "Frieren"
@@ -42,6 +43,7 @@ class TestCharacterDTO:
         dto = CharacterDTO(
             id=VALID_UUID, name="F", description="D",
             cover_url=None, model_url=None, likes=42,
+            animations_url=None,
             created_by=UserDTO(id=VALID_UUID, full_name="A"),
         )
         assert dto.likes == 42
