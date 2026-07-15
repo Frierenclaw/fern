@@ -13,8 +13,18 @@ from redis_db import Redis as RedisDB
 def create_stt() -> DeepgramSTTService:
     return DeepgramSTTService(
         api_key=config.DEEPGRAM_API_KEY,
-        settings=DeepgramSTTService.Settings(model=config.DEEPGRAM_MODEL,
-                                             language='multi'),
+        settings=DeepgramSTTService.Settings(
+            model=config.DEEPGRAM_MODEL,
+            language='multi',
+            smart_format=True,
+            profanity_filter=False,
+            numerals=True,
+            endpointing=100,
+            keyterm=[
+                'Frieren', 'FrierenClaw', 'LiveKit', 'Tortoise', 'aiogram', 'pipecat', 'Cartesia', 'VRM',
+                'Фрирен'
+            ],
+        ),
     )
 
 

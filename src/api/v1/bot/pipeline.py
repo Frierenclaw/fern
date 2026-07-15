@@ -7,6 +7,7 @@ from pipecat.processors.aggregators.llm_response_universal import (
 )
 from pipecat.services.llm_service import FunctionCallParams
 from pipecat.services.openai.llm import OpenAILLMService
+from pipecat.services.tts_service import TextAggregationMode
 from pipecat.transports.livekit.transport import LiveKitTransport
 from pipecat.turns.user_start import WakePhraseUserTurnStartStrategy
 from pipecat.turns.user_turn_strategies import (
@@ -75,6 +76,10 @@ async def run_bot(
                 voice=config.CARTESIA_VOICE_ID,
                 model=config.CARTESIA_MODEL,
             ),
+            sample_rate=44100,
+            encoding='pcm_s16le',
+            max_buffer_delay_ms=200,
+            text_aggregation_mode=TextAggregationMode.SENTENCE
         )
     viseme_processor = VRMVisemeProcessor(
         transport,
