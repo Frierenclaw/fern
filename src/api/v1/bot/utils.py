@@ -14,7 +14,8 @@ def build_tools(client: Client | None, animations: list[str] | None) -> ToolsSch
     anim_tool = build_animation_tool(animations)
     if anim_tool:
         schemas.append(anim_tool)
-    return ToolsSchema(standard_tools=schemas) if schemas else NOT_GIVEN
+    return ToolsSchema(standard_tools=schemas,
+                       custom_tools={'type': 'web_search'}) if schemas else NOT_GIVEN
 
 def build_animation_tool(animations: list[str] | None) -> FunctionSchema | None:
     if not animations:

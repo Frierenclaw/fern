@@ -1,7 +1,7 @@
 from functools import cached_property
 from pathlib import Path
 
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings
 
 
 class Config(BaseSettings):
@@ -10,6 +10,10 @@ class Config(BaseSettings):
     HEITER_BASE_URL: str
     HEITER_MODEL_NAME: str
     HEITER_TOKEN: str
+
+    HEITER_TTS_MODEL: str
+    HEITER_TTS_VOICE: str
+    HEITER_TTS_LANGUAGE: str
     
     ENGINE_VERSION: str
     ENGINE_NAME: str
@@ -51,11 +55,13 @@ class Config(BaseSettings):
     REDIS_PASSWORD: str
 
     USE_CARTESIA: bool = False
+    CARTESIA_MODEL: str | None = None
     CARTESIA_API_KEY: str | None = None
     CARTESIA_VOICE_ID: str | None = None
 
-    model_config = SettingsConfigDict(env_file='.env', extra='allow')
-
+    DEEPGRAM_API_KEY: str
+    DEEPGRAM_MODEL: str
+    
     @cached_property
     def ACCESS_PRIVATE_KEY(self) -> str:
         return Path(self.ACCESS_PRIVATE_KEY_PATH).read_text()

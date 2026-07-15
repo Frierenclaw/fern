@@ -1,31 +1,27 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
-from faster_whisper import WhisperModel
 from livekit import api as lk_api
 from pipecat.audio.vad.silero import SileroVADAnalyzer
-from pipecat.services.whisper.stt import WhisperSTTService
+from pipecat.services.deepgram.stt import DeepgramSTTService
 from redis.asyncio import Redis as RedisClient
 
 from core.config import config
 from redis_db import Redis as RedisDB
 
-_whisper_model = WhisperModel("base", device="cpu", compute_type="int8")
 
-
-def create_stt() -> WhisperSTTService:
-    stt = WhisperSTTService(
-        settings=WhisperSTTService.Settings(
-            model="large-v3",
-            language=None
-        ),
+def create_stt() -> DeepgramSTTService:
+    return DeepgramSTTService(
+        api_key=config.DEEPGRAM_API_KEY,
+        settings=DeepgramSTTService.Settings(model=config.DEEPGRAM_MODEL,
+                                             language='multi'),
     )
-    stt._model = _whisper_model
-    return stt
 
 
 def create_vad() -> SileroVADAnalyzer:
     return SileroVADAnalyzer()
 
-
+@asynccontextmanager
 async def lifespan(app: FastAPI):
     app.state.livekit = lk_api.LiveKitAPI(url=config.LIVEKIT_API_URL,
                             api_key=config.LIVEKIT_API_KEY,
