@@ -5,9 +5,13 @@ from pipecat.transports.livekit.transport import LiveKitTransport
 
 
 class ClientToolBridge:
-    def __init__(self, transport: LiveKitTransport, timeout_secs: float = 8.0):
+    def __init__(self, 
+                 transport: LiveKitTransport, 
+                 timeout_secs: float = 8.0,
+                 retries: int = 10):
         self._transport = transport
         self._timeout = timeout_secs
+        self._retries = retries
         self._pending: dict[str, asyncio.Future] = {}
 
     async def call(self, tool_call_id: str, name: str, arguments: dict) -> dict:
@@ -23,12 +27,14 @@ class ClientToolBridge:
 
         await self._transport.send_message(payload)
 
-        try:
-            return await asyncio.wait_for(fut, timeout=self._timeout)
-        except TimeoutError:
-            return {'error': 'client_timeout'}
-        finally:
-            self._pending.pop(tool_call_id, None)
+        for retry in range(self._retries):
+            try:
+                return await asyncio.wait_for(fut, timeout=self._timeout)
+            except TimeoutError:
+                if retry == self._retries:
+                    return {'error': 'client_timeout'}
+            
+        self._pending.pop(tool_call_id, None)
 
     def on_tool_result(self, raw: bytes):
         msg = json.loads(raw)

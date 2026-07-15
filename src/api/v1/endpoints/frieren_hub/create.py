@@ -125,7 +125,7 @@ async def upload_animations(animations: UploadFile,
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail='Character not found')
     
-    filename = f'{character.id}_model{extension.lower()}'
+    filename = f'{character.id}_animations{extension.lower()}'
     animations_io = await animations.read()
 
     s3 = S3Client()
