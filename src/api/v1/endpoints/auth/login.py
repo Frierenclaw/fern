@@ -1,3 +1,4 @@
+import asyncio
 from typing import Annotated
 
 import bcrypt
@@ -21,7 +22,9 @@ async def login_endpoint(oauth: Annotated[OAuth2PasswordRequestForm, Depends()])
         is_valid = await Auth.check_password(hashed_password=user.password,
                                        inputed_password=oauth.password)
     else:
-        bcrypt.checkpw(oauth.password.encode('utf-8'), DUMMY_HASH)
+        await asyncio.to_thread(bcrypt.checkpw, 
+                                oauth.password.encode('utf-8'), 
+                                DUMMY_HASH)
 
         is_valid = False
 

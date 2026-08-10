@@ -63,15 +63,11 @@ async def list_all_characters(
     limit: int = Query(20, ge=1, le=100),
     offset: int = Query(0, ge=0),
 ):
-    characters, total = await asyncio.gather(
-        Character.all().limit(limit).offset(offset).select_related('created_by'),
-        Character.all().count()
-    )
+    characters = await Character.all().limit(limit).offset(offset).select_related('created_by')
 
     try:
         return CharacterListResponseDTO(items=await serialize_characters_with_likes(characters=characters,
-                                                                                    redis_client=request.app.state.redis),
-                                         total=total)
+                                                                                    redis_client=request.app.state.redis))
 
     except ValueError as e:
         logger.error(f'Error while serializing characters. Detail: {e}')
@@ -85,15 +81,10 @@ async def list_all_characters_from_user(
     limit: int = Query(20, ge=1, le=100),
     offset: int = Query(0, ge=0)
 ):
-    characters, total = await asyncio.gather(
-        Character.filter(created_by__id=user_id).limit(limit).offset(offset).select_related('created_by'),
-        Character.filter(created_by__id=user_id).count()
-    )
-
+    characters  = await Character.filter(created_by__id=user_id).limit(limit).offset(offset).select_related('created_by')
     try:
         return CharacterListResponseDTO(items=await serialize_characters_with_likes(characters=characters,
-                                                                                    redis_client=request.app.state.redis), 
-                                        total=total)
+                                                                                    redis_client=request.app.state.redis))
     
     except ValueError as e:
         logger.error(f'Error while serializing characters. Detail: {e}')
