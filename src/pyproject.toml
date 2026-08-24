@@ -17,6 +17,7 @@ dependencies = [
     "pydantic-settings>=2.14.1",
     "pyjwt>=2.13.0",
     "redis>=8.0.0",
+    "slowapi>=0.1.10",
     "tortoise-orm>=1.1.7",
     "types-aiobotocore-s3>=3.7.0",
     "tzdata>=2026.2",

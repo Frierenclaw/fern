@@ -9,6 +9,7 @@ from api.v1.bot.pipeline import run_bot
 from api.v1.deps.auth import get_current_user
 from api.v1.livekit_logic import LiveKIT
 from api.v1.schemas.create_room import CreateRoomDTO
+from core.clients import limiter
 from core.config import config
 from models.character import Character
 from models.client import Client
@@ -20,6 +21,7 @@ _bot_tasks: set[asyncio.Task] = set()
 
 
 @router.post('/')
+@limiter.limit('3/minute;20/hour')
 async def create_room_and_invite_frieren(request: Request,
                                          user: Annotated[User, Depends(get_current_user)],
                                          dto: CreateRoomDTO):

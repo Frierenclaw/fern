@@ -1,13 +1,16 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, Request, status
 from loguru import logger
 
 from api.v1.auth_logic.layer import Auth
 from api.v1.schemas.auth_refresh import RefreshEndpointRequestDTO, RefreshEndpointResponseDTO
+from core.clients import limiter
 
 router = APIRouter()
 
 @router.post('/refresh', response_model=RefreshEndpointResponseDTO)
-async def refresh_endpoint(dto: RefreshEndpointRequestDTO):
+@limiter.limit('30/minute')
+async def refresh_endpoint(request: Request,
+                           dto: RefreshEndpointRequestDTO):
     try:
         refresh_token = Auth.decode_refresh_token(dto.refresh_token)   
     except Exception as e:

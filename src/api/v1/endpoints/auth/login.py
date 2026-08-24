@@ -2,10 +2,11 @@ import asyncio
 from typing import Annotated
 
 import bcrypt
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
 
 from api.v1.auth_logic import Auth
+from core.clients import limiter
 from models.user import User
 
 router = APIRouter()
@@ -13,7 +14,9 @@ router = APIRouter()
 DUMMY_HASH = bcrypt.hashpw(b'dummy_password', bcrypt.gensalt())
 
 @router.post('/login')
-async def login_endpoint(oauth: Annotated[OAuth2PasswordRequestForm, Depends()]):
+@limiter.limit('10/minute;60/hour')
+async def login_endpoint(request: Request,
+                         oauth: Annotated[OAuth2PasswordRequestForm, Depends()]):
     """Authenticate manager by email and password. Issues JWT tokens as HttpOnly cookies."""
     
     user = await User.get_or_none(email=oauth.username)

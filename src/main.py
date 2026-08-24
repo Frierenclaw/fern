@@ -11,6 +11,9 @@ app = FastAPI(
     version=config.ENGINE_VERSION,
     lifespan=lifespan
 )
+
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=['*'],

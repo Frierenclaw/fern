@@ -1,14 +1,17 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, Request, status
 from loguru import logger
 
 from api.v1.auth_logic import Auth
 from api.v1.schemas.auth_register import RegisterDTO
+from core.clients import limiter
 from models.user import User
 
 router = APIRouter()
 
 @router.post('/register')
-async def register(dto: RegisterDTO):
+@limiter.limit('5/hour;20/day')
+async def register(request: Request,
+                   dto: RegisterDTO):
     user_exists = await User.filter(email=dto.email).exists()
 
     if user_exists:

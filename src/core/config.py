@@ -53,6 +53,7 @@ class Config(BaseSettings):
     REDIS_HOST: str
     REDIS_PORT: int = 6379
     REDIS_PASSWORD: str
+    REDIS_LIMITER_DB: int
 
     USE_CARTESIA: bool = False
     CARTESIA_MODEL: str | None = None
@@ -61,6 +62,10 @@ class Config(BaseSettings):
 
     DEEPGRAM_API_KEY: str
     DEEPGRAM_MODEL: str
+
+    CHAT_WINDOW_SIZE: int = 20 # How many last messages are sent to the model
+    CHAT_TTL: int = 60 * 60 * 24 * 7 # Lifetime of the redis chat cache
+    CHAT_MAX_MESSAGE_LENGTH: int = 4096
 
     @cached_property
     def ACCESS_PRIVATE_KEY(self) -> str:
@@ -97,7 +102,8 @@ TORTOISE_ORM = {
                 'models.user',
                 'models.character',
                 'models.character_collection',
-                'models.client'
+                'models.client',
+                'models.chat'
             ],
             'migrations': 'models.migrations',
             'default_connection': 'default'

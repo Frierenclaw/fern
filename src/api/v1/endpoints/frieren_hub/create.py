@@ -1,13 +1,14 @@
 import os
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, HTTPException, Request, UploadFile, status
 from loguru import logger
 from pydantic import UUID4
 
 from api.v1.deps.auth import get_current_user
 from api.v1.s3 import S3Client
 from api.v1.schemas.frieren_hub_create import CharacterCreateDTO, CharacterCreateResponseDTO
+from core.clients import limiter
 from core.config import config
 from models.character import Character
 from models.user import User
@@ -15,7 +16,9 @@ from models.user import User
 router = APIRouter()
 
 @router.post('/', response_model=CharacterCreateResponseDTO)
-async def create_new_character(dto: CharacterCreateDTO,
+@limiter.limit('10/hour;40/day')
+async def create_new_character(request: Request,
+                               dto: CharacterCreateDTO,
                                user: Annotated[User, Depends(get_current_user)]):
     try:
         character = await Character.create(
@@ -32,7 +35,9 @@ async def create_new_character(dto: CharacterCreateDTO,
 
 
 @router.post('/cover')
-async def upload_cover(cover: UploadFile,
+@limiter.limit('20/hour')
+async def upload_cover(request: Request,
+                       cover: UploadFile,
                        user: Annotated[User, Depends(get_current_user)],
                        character_id: UUID4):
     _, extension = os.path.splitext(cover.filename)
@@ -67,7 +72,9 @@ async def upload_cover(cover: UploadFile,
     return {'status': 'ok'}
 
 @router.post('/model')
-async def upload_model(model: UploadFile,
+@limiter.limit('10/hour')
+async def upload_model(request: Request,
+                       model: UploadFile,
                        user: Annotated[User, Depends(get_current_user)],
                        character_id: UUID4):
     _, extension = os.path.splitext(model.filename)
@@ -102,7 +109,9 @@ async def upload_model(model: UploadFile,
     return {'status': 'ok'}
 
 @router.post('/animations')
-async def upload_animations(animations: UploadFile,
+@limiter.limit('15/hour')
+async def upload_animations(request: Request,
+                            animations: UploadFile,
                             user: Annotated[User, Depends(get_current_user)],
                             character_id: UUID4):  
     _, extension = os.path.splitext(animations.filename)

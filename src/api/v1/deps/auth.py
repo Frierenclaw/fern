@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Request, status
 from fastapi.security.oauth2 import OAuth2PasswordBearer
 from jwt import ExpiredSignatureError, InvalidTokenError
 
@@ -10,7 +10,8 @@ from models.user import User
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/api/v1/auth/login')
 
-async def get_current_user(auth_token: Annotated[str, Depends(oauth2_scheme)]):
+async def get_current_user(request: Request,
+                           auth_token: Annotated[str, Depends(oauth2_scheme)]):
     try:
         decode_result = Auth.decode_access_token(auth_token)
     except ExpiredSignatureError:
@@ -29,7 +30,9 @@ async def get_current_user(auth_token: Annotated[str, Depends(oauth2_scheme)]):
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail='User not found. Unauthorized.')
-    
+
+    request.state.user_id = str(user.id) # Limiter key, see core.clients.user_or_ip
+
     return user
 
 async def admin_rights_required(user: Annotated[User, Depends(get_current_user)]):
